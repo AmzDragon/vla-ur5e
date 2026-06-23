@@ -1,0 +1,58 @@
+<plastic_crate_body>
+  <body name="object" pos="0 0.15 0.79524">
+    <inertial pos="0 0 0" mass="0.03125" diaginertia="0.0000625 0.000109375 0.00011875"/>
+
+    <joint name="object_slide_x" type="slide" axis="1 0 0" damping="1"/>
+    <joint name="object_slide_y" type="slide" axis="0 1 0" damping="1"/>
+    <joint name="object_slide_z" type="slide" axis="0 0 1" damping="1"/>
+    <joint name="object_roll" type="hinge" axis="1 0 0" damping="0.1"/>
+    <joint name="object_pitch" type="hinge" axis="0 1 0" damping="0.1"/>
+    <joint name="object_yaw" type="hinge" axis="0 0 1" damping="0.1"/>
+
+    <geom name="visual"
+          type="mesh"
+          mesh="crate_mesh"
+          material="crate_green"
+          pos="0 0 -0.0849405"
+          quat="0.70710678 0.70710678 0 0"
+          contype="0"
+          conaffinity="0"
+          group="1"/>
+
+    <geom name="crate_col_bottom" type="box"
+          pos="0 0 -0.09074"
+          size="0.172465 0.113415 0.0045"
+          material="crate_collision"
+          rgba="0 0 0 0"
+          friction="1.0 0.005 0.0001"
+          group="3"/>
+    <geom name="crate_col_front" type="box"
+          pos="0 -0.109915 0.0045"
+          size="0.172465 0.0035 0.09074"
+          material="crate_collision"
+          rgba="0 0 0 0"
+          friction="1.0 0.005 0.0001"
+          group="3"/>
+    <geom name="crate_col_back" type="box"
+          pos="0 0.109915 0.0045"
+          size="0.172465 0.0035 0.09074"
+          material="crate_collision"
+          rgba="0 0 0 0"
+          friction="1.0 0.005 0.0001"
+          group="3"/>
+    <geom name="crate_col_left" type="box"
+          pos="-0.168965 0 0.0045"
+          size="0.0035 0.113415 0.09074"
+          material="crate_collision"
+          rgba="0 0 0 0"
+          friction="1.0 0.005 0.0001"
+          group="3"/>
+    <geom name="crate_col_right" type="box"
+          pos="0.168965 0 0.0045"
+          size="0.0035 0.113415 0.09074"
+          material="crate_collision"
+          rgba="0 0 0 0"
+          friction="1.0 0.005 0.0001"
+          group="3"/>
+  </body>
+</plastic_crate_body>

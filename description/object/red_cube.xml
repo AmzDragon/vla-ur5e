@@ -1,0 +1,33 @@
+<!-- l = 0.03 m. Body origin is at the center of the bottom face. -->
+<red_cube_body>
+  <body name="red_cube">
+    <freejoint name="red_cube_freejoint"/>
+
+    <geom
+      name="red_cube_geom"
+      type="box"
+      pos="0 0 0.015"
+      size="0.015 0.015 0.015"
+      rgba="0.95 0.22 0.04 1"
+      density="500"
+      friction="4.0 0.05 0.005"
+      condim="6"
+      priority="1"
+      solref="0.005 1"
+      solimp="0.95 0.99 0.001"
+      group="1"
+    />
+    <site
+      name="red_cube_center_site"
+      type="sphere"
+      pos="0 0 0.015"
+      size="0.003"
+      rgba="1 1 1 0.3"
+      group="4"
+    />
+    <site name="red_cube_left_site" type="sphere" pos="-0.09 0 0.015" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="red_cube_right_site" type="sphere" pos="0.09 0 0.015" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="red_cube_up_site" type="sphere" pos="0 0.09 0.015" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="red_cube_down_site" type="sphere" pos="0 -0.09 0.015" size="0.003" rgba="1 1 1 0.3" group="4"/>
+  </body>
+</red_cube_body>

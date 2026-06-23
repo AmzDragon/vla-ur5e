@@ -1,0 +1,6 @@
+[submodule "thirdparty/openpi"]
+	path = thirdparty/openpi
+	url = https://github.com/Physical-Intelligence/openpi.git
+[submodule "thirdparty/lerobot"]
+	path = thirdparty/lerobot
+	url = https://github.com/huggingface/lerobot.git

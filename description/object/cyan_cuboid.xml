@@ -1,0 +1,33 @@
+<!-- Length = 2l = 0.06 m; width = l = 0.03 m; height = l/2 = 0.015 m. -->
+<cyan_cuboid_body>
+  <body name="cyan_cuboid">
+    <freejoint name="cyan_cuboid_freejoint"/>
+
+    <geom
+      name="cyan_cuboid_geom"
+      type="box"
+      pos="0 0 0.0075"
+      size="0.03 0.015 0.0075"
+      rgba="0.00 0.42 0.55 1"
+      density="500"
+      friction="4.0 0.05 0.005"
+      condim="6"
+      priority="1"
+      solref="0.005 1"
+      solimp="0.95 0.99 0.001"
+      group="1"
+    />
+    <site
+      name="cyan_cuboid_center_site"
+      type="sphere"
+      pos="0 0 0.0075"
+      size="0.003"
+      rgba="1 1 1 0.3"
+      group="4"
+    />
+    <site name="cyan_cuboid_left_site" type="sphere" pos="-0.09 0 0.0075" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="cyan_cuboid_right_site" type="sphere" pos="0.09 0 0.0075" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="cyan_cuboid_up_site" type="sphere" pos="0 0.09 0.0075" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="cyan_cuboid_down_site" type="sphere" pos="0 -0.09 0.0075" size="0.003" rgba="1 1 1 0.3" group="4"/>
+  </body>
+</cyan_cuboid_body>

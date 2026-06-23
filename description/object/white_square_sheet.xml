@@ -1,0 +1,27 @@
+<!-- 0.10 m x 0.10 m square sheet with 1 mm simulation thickness. -->
+<white_square_sheet_body>
+  <body name="white_square_sheet">
+    <freejoint name="white_square_sheet_freejoint"/>
+
+    <geom
+      name="white_square_sheet_geom"
+      type="box"
+      pos="0 0 0.0005"
+      size="0.05 0.05 0.0005"
+      rgba="0.95 0.95 0.95 1"
+      density="700"
+      friction="4.0 0.05 0.005"
+      condim="6"
+      priority="1"
+      solref="0.005 1"
+      solimp="0.95 0.99 0.001"
+      group="1"
+    />
+
+    <site name="white_square_sheet_center_site" type="sphere" pos="0 0 0.001" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="white_square_sheet_left_site" type="sphere" pos="-0.125 0 0.001" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="white_square_sheet_right_site" type="sphere" pos="0.125 0 0.001" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="white_square_sheet_up_site" type="sphere" pos="0 0.125 0.001" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="white_square_sheet_down_site" type="sphere" pos="0 -0.125 0.001" size="0.003" rgba="1 1 1 0.3" group="4"/>
+  </body>
+</white_square_sheet_body>

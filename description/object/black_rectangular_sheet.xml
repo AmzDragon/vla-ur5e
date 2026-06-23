@@ -1,0 +1,27 @@
+<!-- 0.08 m x 0.05 m rectangular sheet with 1 mm simulation thickness. -->
+<black_rectangular_sheet_body>
+  <body name="black_rectangular_sheet">
+    <freejoint name="black_rectangular_sheet_freejoint"/>
+
+    <geom
+      name="black_rectangular_sheet_geom"
+      type="box"
+      pos="0 0 0.0005"
+      size="0.04 0.025 0.0005"
+      rgba="0.03 0.03 0.03 1"
+      density="700"
+      friction="4.0 0.05 0.005"
+      condim="6"
+      priority="1"
+      solref="0.005 1"
+      solimp="0.95 0.99 0.001"
+      group="1"
+    />
+
+    <site name="black_rectangular_sheet_center_site" type="sphere" pos="0 0 0.001" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="black_rectangular_sheet_left_site" type="sphere" pos="-0.115 0 0.001" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="black_rectangular_sheet_right_site" type="sphere" pos="0.115 0 0.001" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="black_rectangular_sheet_up_site" type="sphere" pos="0 0.10 0.001" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="black_rectangular_sheet_down_site" type="sphere" pos="0 -0.10 0.001" size="0.003" rgba="1 1 1 0.3" group="4"/>
+  </body>
+</black_rectangular_sheet_body>

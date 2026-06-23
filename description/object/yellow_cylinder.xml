@@ -1,0 +1,33 @@
+<!-- Diameter = l = 0.03 m; height = 2l = 0.06 m. -->
+<yellow_cylinder_body>
+  <body name="yellow_cylinder">
+    <freejoint name="yellow_cylinder_freejoint"/>
+
+    <geom
+      name="yellow_cylinder_geom"
+      type="cylinder"
+      pos="0 0 0.03"
+      size="0.015 0.03"
+      rgba="0.95 0.68 0.02 1"
+      density="500"
+      friction="4.0 0.05 0.005"
+      condim="6"
+      priority="1"
+      solref="0.005 1"
+      solimp="0.95 0.99 0.001"
+      group="1"
+    />
+    <site
+      name="yellow_cylinder_center_site"
+      type="sphere"
+      pos="0 0 0.03"
+      size="0.003"
+      rgba="1 1 1 0.3"
+      group="4"
+    />
+    <site name="yellow_cylinder_left_site" type="sphere" pos="-0.09 0 0.03" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="yellow_cylinder_right_site" type="sphere" pos="0.09 0 0.03" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="yellow_cylinder_up_site" type="sphere" pos="0 0.09 0.03" size="0.003" rgba="1 1 1 0.3" group="4"/>
+    <site name="yellow_cylinder_down_site" type="sphere" pos="0 -0.09 0.03" size="0.003" rgba="1 1 1 0.3" group="4"/>
+  </body>
+</yellow_cylinder_body>
