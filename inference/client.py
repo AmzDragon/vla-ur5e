@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import time
 from dataclasses import replace
 from pathlib import Path
 from typing import Any
@@ -20,7 +21,7 @@ for import_path in (REPO_ROOT, OPENPI_CLIENT_SRC):
         sys.path.insert(0, import_path_str)
 
 from dataset_record.config import EXTERIOR_IMAGE_KEY, WRIST_IMAGE_KEY, RecordConfig
-from env import LabSimMujocoEnv, StateSample
+from env import LabSimMujocoEnv, StateSample, viewer_is_running
 from openpi_client import image_tools, websocket_client_policy
 
 
@@ -28,9 +29,12 @@ STATE_KEY = "observation.state"
 PROMPT_KEY = "prompt"
 ACTION_KEY = "actions"
 ACTION_DIM = 7
+EXPECTED_ACTION_HORIZON = 50
+DEFAULT_EXECUTION_HORIZON = 25
+DEFAULT_NUM_CHUNKS = 1000
 
-DEFAULT_HOST = "localhost"
-DEFAULT_PORT = 8000
+DEFAULT_HOST = "10.21.22.46"
+DEFAULT_PORT = 8088
 
 
 def build_ur5e_observation(
@@ -134,15 +138,96 @@ class RemoteUR5EInferenceClient:
             )
 
         action_chunk = np.asarray(result[ACTION_KEY], dtype=np.float32)
-        if action_chunk.ndim != 2 or action_chunk.shape[-1] != ACTION_DIM:
-            raise ValueError(
-                "expected action chunk with shape "
-                f"(action_horizon, {ACTION_DIM}), got {action_chunk.shape}"
-            )
         return action_chunk
+
+    def rollout(
+        self,
+        sim_env: LabSimMujocoEnv,
+        *,
+        prompt: str,
+        num_chunks: int,
+        execution_horizon: int = DEFAULT_EXECUTION_HORIZON,
+        gripper_threshold: float = 0.5,
+        viewer=None,
+        real_time: bool = True,
+    ) -> int:
+        """Repeatedly query the server and execute the first actions of each chunk."""
+        executed_steps = 0
+        for chunk_idx in range(num_chunks):
+            if not viewer_is_running(viewer):
+                break
+
+            action_chunk = self.infer_action_chunk_from_env(
+                sim_env,
+                prompt=prompt,
+            )
+            steps = execute_action_steps(
+                sim_env,
+                action_chunk,
+                execution_horizon=execution_horizon,
+                gripper_threshold=gripper_threshold,
+                viewer=viewer,
+                real_time=real_time,
+            )
+            executed_steps += steps
+            print(
+                f"chunk {chunk_idx}: received {tuple(action_chunk.shape)}, "
+                f"executed {steps} step(s)"
+            )
+        return executed_steps
 
     def reset(self) -> None:
         self._policy.reset()
+
+
+def execute_action_steps(
+    sim_env: LabSimMujocoEnv,
+    action_chunk: np.ndarray,
+    *,
+    execution_horizon: int = DEFAULT_EXECUTION_HORIZON,
+    gripper_threshold: float = 0.5,
+    viewer=None,
+    real_time: bool = True,
+) -> int:
+    """Execute the first action steps as XYZ deltas plus gripper state.
+
+    The recorded action format is [delta_xyz, delta_rpy, gripper_closed]. During
+    inference rollout we intentionally ignore delta_rpy and keep the current
+    end-effector orientation target.
+    """
+    action_chunk = np.asarray(action_chunk, dtype=np.float32)
+    steps_to_execute = min(execution_horizon, action_chunk.shape[0])
+    sim_env.solver.configuration.update(sim_env.data.qpos.copy())
+    sim_env.solver.reset_target_to_current()
+
+    next_tick = time.perf_counter()
+    executed_steps = 0
+    for action in action_chunk[:steps_to_execute]:
+        if not viewer_is_running(viewer):
+            return executed_steps
+
+        delta_xyz = np.asarray(action[:3], dtype=np.float64)
+        gripper_closed = bool(float(action[6]) >= gripper_threshold)
+
+        sim_env.gripper_closed = gripper_closed
+        sim_env.solver.configuration.update(sim_env.data.qpos.copy())
+        sim_env.solver.step(delta_xyz, scale=1.0)
+        sim_env.sync_ctrl_from_qpos(sim_env.solver.qpos(), sim_env.arm_actuator_ids)
+        sim_env.data.ctrl[sim_env.gripper_actuator_id] = (
+            sim_env.cfg.gripper_closed_ctrl
+            if gripper_closed
+            else sim_env.cfg.gripper_open_ctrl
+        )
+        sim_env.step_for_duration(sim_env.control_dt)
+
+        if viewer is not None:
+            viewer.sync()
+        if real_time:
+            next_tick += sim_env.control_dt
+            time.sleep(max(0.0, next_tick - time.perf_counter()))
+        executed_steps += 1
+
+    return executed_steps
 
 
 def _as_state(state: Any) -> np.ndarray:
@@ -178,13 +263,31 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--host", default=DEFAULT_HOST)
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
-    parser.add_argument("--prompt", default=cfg.task)
+    parser.add_argument("--prompt", default="Pick and place the yellow cylinder on the left side of the black rectangular paper. Transfer the red cube over the yellow cylinder.")
     parser.add_argument("--fps", type=int, default=cfg.fps)
     parser.add_argument("--image-size", type=int, default=cfg.image_size)
     parser.add_argument(
-        "--print-actions",
+        "--num-chunks",
+        type=int,
+        default=DEFAULT_NUM_CHUNKS,
+        help="Number of remote inference chunks to request and execute.",
+    )
+    parser.add_argument(
+        "--execution-horizon",
+        type=int,
+        default=DEFAULT_EXECUTION_HORIZON,
+        help="Number of leading actions to execute from each returned chunk.",
+    )
+    parser.add_argument(
+        "--gripper-threshold",
+        type=float,
+        default=0.5,
+        help="Treat action[6] >= this value as gripper closed.",
+    )
+    parser.add_argument(
+        "--no-real-time",
         action="store_true",
-        help="Print the full returned action chunk instead of only its first row.",
+        help="Execute simulation steps without sleeping to match cfg.fps.",
     )
     return parser.parse_args()
 
@@ -206,16 +309,17 @@ def main() -> None:
     sim_env = LabSimMujocoEnv(cfg)
     try:
         sim_env.reset()
-        action_chunk = client.infer_action_chunk_from_env(
-            sim_env,
-            prompt=args.prompt,
-        )
-        print(f"action_chunk shape={tuple(action_chunk.shape)} dtype={action_chunk.dtype}")
-        if args.print_actions:
-            np.set_printoptions(precision=5, suppress=True)
-            print(action_chunk)
-        else:
-            print(f"first_action={action_chunk[0].tolist()}")
+        with sim_env.viewer_context() as viewer:
+            executed_steps = client.rollout(
+                sim_env,
+                prompt=args.prompt,
+                num_chunks=args.num_chunks,
+                execution_horizon=args.execution_horizon,
+                gripper_threshold=args.gripper_threshold,
+                viewer=viewer,
+                real_time=not args.no_real_time,
+            )
+            print(f"executed_steps={executed_steps}")
     finally:
         sim_env.close()
 

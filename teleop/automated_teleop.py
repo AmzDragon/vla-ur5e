@@ -382,6 +382,7 @@ class AutomatedTeleop:
         )
         self._move_to(pick_position + hover_offset, viewer, step_callback)
         self._move_to(pick_position, viewer, step_callback)
+        self.env.hold(0.4, viewer=viewer, **callback_kwargs)
         self.env.set_gripper(
             True,
             settle_time_s=self.motion_config.gripper_settle_time_s,
@@ -391,6 +392,7 @@ class AutomatedTeleop:
         self._move_to(pick_position + hover_offset, viewer, step_callback)
         self._move_to(place_position + hover_offset, viewer, step_callback)
         self._move_to(place_position, viewer, step_callback)
+        self.env.hold(0.4, viewer=viewer, **callback_kwargs)
         self.env.set_gripper(
             False,
             settle_time_s=self.motion_config.gripper_settle_time_s,

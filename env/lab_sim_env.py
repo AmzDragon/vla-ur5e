@@ -169,6 +169,34 @@ class LabSimMujocoEnv:
         self.data.qpos[qpos_addr : qpos_addr + 3] = position
         self.data.qpos[qpos_addr + 3 : qpos_addr + 7] = quaternion
 
+    def capture_env_info(self) -> dict[str, object]:
+        return {
+            "pose_format": "freejoint_position_xyz_quaternion_wxyz",
+            "objects": {
+                spec.name: self.capture_object_pose(spec.name)
+                for spec in self.cfg.reset_objects
+            },
+        }
+
+    def capture_object_pose(self, object_name: str) -> dict[str, object]:
+        joint_name = f"{object_name}_freejoint"
+        joint_id = mujoco.mj_name2id(
+            self.model,
+            mujoco.mjtObj.mjOBJ_JOINT,
+            joint_name,
+        )
+        if joint_id < 0:
+            raise KeyError(f"joint not found in model: {joint_name}")
+
+        qpos_addr = int(self.model.jnt_qposadr[joint_id])
+        position = self.data.qpos[qpos_addr : qpos_addr + 3].copy()
+        quaternion = self.data.qpos[qpos_addr + 3 : qpos_addr + 7].copy()
+        return {
+            "freejoint": joint_name,
+            "position": position.astype(float).tolist(),
+            "quaternion": quaternion.astype(float).tolist(),
+        }
+
     def sync_solver_to_data(self) -> None:
         self.solver.configuration.update(self.data.qpos.copy())
         self.solver.reset_target_to_current()

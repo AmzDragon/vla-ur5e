@@ -9,6 +9,7 @@ import sys
 import tempfile
 import time
 from collections.abc import Iterable, Iterator
+from copy import deepcopy
 from dataclasses import dataclass, replace
 from pathlib import Path
 
@@ -24,7 +25,7 @@ os.environ["TMP"] = TMP_DIR
 os.environ["TEMP"] = TMP_DIR
 os.environ["TMPDIR"] = TMP_DIR
 tempfile.tempdir = TMP_DIR
-from dataset_record.config import LEROBOT_FEATURES, LEROBOT_SRC, RecordConfig
+from dataset_record.config import LEROBOT_FEATURES, LEROBOT_SRC, STATE_NAMES, RecordConfig
 from env import LabSimMujocoEnv, StateSample, relative_rotation_euler, viewer_is_running
 
 if str(LEROBOT_SRC) not in sys.path:
@@ -39,6 +40,7 @@ from teleop.keyboard_teleop import KeyboardTeleop
 DEFAULT_TASK_DESCRIPTIONS_PATH = (
     REPO_ROOT / "dataset_record" / "info" / "task1" / "task_descriptions.json"
 )
+ACTION_MODES = ("theta", "abs")
 
 
 @dataclass(frozen=True)
@@ -53,6 +55,7 @@ class RecordedEpisode:
     samples: list[StateSample]
     task: str
     description_id: str | None = None
+    env_info: dict[str, object] | None = None
 
 
 class RecordingHotkeys:
@@ -108,6 +111,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--num-episodes", type=int, default=cfg.num_episodes)
     parser.add_argument("--episode-time-s", type=float, default=cfg.episode_time_s)
     parser.add_argument("--fps", type=int, default=cfg.fps)
+    parser.add_argument(
+        "--action-mode",
+        choices=ACTION_MODES,
+        default="theta",
+        help="Action label representation: theta is delta pose, abs is next absolute pose.",
+    )
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--headless", action="store_true")
     return parser.parse_args()
@@ -130,7 +139,12 @@ def main() -> None:
         task_descriptions_path=args.task_descriptions,
         headless=args.headless,
     )
-    saved = write_lerobot_dataset(raw_episodes, cfg, overwrite=args.overwrite)
+    saved = write_lerobot_dataset(
+        raw_episodes,
+        cfg,
+        overwrite=args.overwrite,
+        action_mode=args.action_mode,
+    )
     print(f"Saved {saved} episode(s) to {cfg.dataset_root}")
 
 
@@ -173,6 +187,7 @@ def collect_keyboard_episodes(
             while episode_idx < cfg.num_episodes:
                 sim_env.reset()
                 teleop.reset()
+                env_info = sim_env.capture_env_info()
 
                 should_start, stop_requested = _wait_for_episode_start(cfg, hotkeys, viewer, episode_idx)
                 if stop_requested or not should_start or not viewer_is_running(viewer):
@@ -194,7 +209,13 @@ def collect_keyboard_episodes(
                     continue
 
                 if len(samples) >= 2:
-                    raw_episodes.append(RecordedEpisode(samples=samples, task=cfg.task))
+                    raw_episodes.append(
+                        RecordedEpisode(
+                            samples=samples,
+                            task=cfg.task,
+                            env_info=env_info,
+                        )
+                    )
                     print(f"Captured episode {len(raw_episodes) - 1}: {len(samples)} raw frames.")
                 else:
                     print(f"Skipped episode {episode_idx}: not enough frames.")
@@ -285,12 +306,14 @@ def collect_automated_episodes(
                     flush=True,
                 )
                 samples: list[StateSample] = []
+                env_info: dict[str, object] | None = None
 
                 def capture_step() -> None:
                     samples.append(sim_env.capture_state())
 
                 try:
                     sim_env.reset()
+                    env_info = sim_env.capture_env_info()
                     print(
                         f"Automatically started recording "
                         f"{description.description_id}."
@@ -321,6 +344,7 @@ def collect_automated_episodes(
                     samples=samples,
                     task=description.english,
                     description_id=description.description_id,
+                    env_info=env_info,
                 )
                 print(
                     f"Captured {description.description_id}: {len(samples)} raw frames."
@@ -409,6 +433,7 @@ def write_lerobot_dataset(
     cfg: RecordConfig,
     *,
     overwrite: bool = False,
+    action_mode: str = "theta",
 ) -> int:
     root = cfg.dataset_root
     if root.exists():
@@ -423,7 +448,7 @@ def write_lerobot_dataset(
         fps=cfg.fps,
         root=root,
         robot_type=cfg.robot_type,
-        features=LEROBOT_FEATURES,
+        features=lerobot_features_for_action_mode(action_mode),
         use_videos=True,
         image_writer_processes=0,
         image_writer_threads=0,
@@ -433,7 +458,11 @@ def write_lerobot_dataset(
     manifest_entries = []
     try:
         for episode_idx, raw_episode in enumerate(raw_episodes):
-            processed = process_episode(raw_episode.samples, cfg)
+            processed = process_episode(
+                raw_episode.samples,
+                cfg,
+                action_mode=action_mode,
+            )
             if not processed:
                 print(f"Skipped episode {episode_idx}: no useful motion or gripper change.")
                 del processed, raw_episode
@@ -453,6 +482,8 @@ def write_lerobot_dataset(
                     "episode_index": saved,
                     "description_id": raw_episode.description_id,
                     "task": raw_episode.task,
+                    "env_info": raw_episode.env_info,
+                    "action_mode": action_mode,
                 }
             )
             saved += 1
@@ -481,6 +512,8 @@ def write_lerobot_dataset(
 def process_episode(
     samples: list[StateSample],
     cfg: RecordConfig,
+    *,
+    action_mode: str = "theta",
 ) -> list[tuple[StateSample, np.ndarray]]:
     kept = trim_idle_edges(samples, cfg)
     if len(kept) < 2:
@@ -489,11 +522,18 @@ def process_episode(
     processed: list[tuple[StateSample, np.ndarray]] = []
     for idx, sample in enumerate(kept):
         if idx == len(kept) - 1:
-            action = np.zeros((7,), dtype=np.float32)
+            action = _last_frame_action(sample, action_mode, cfg)
         else:
-            action = _state_delta_action(sample, kept[idx + 1], cfg)
+            action = _state_action(sample, kept[idx + 1], action_mode, cfg)
         processed.append((sample, action))
     return processed
+
+
+def lerobot_features_for_action_mode(action_mode: str) -> dict:
+    features = deepcopy(LEROBOT_FEATURES)
+    if action_mode == "abs":
+        features["action"]["names"] = STATE_NAMES
+    return features
 
 
 def trim_idle_edges(samples: list[StateSample], cfg: RecordConfig) -> list[StateSample]:
@@ -552,6 +592,37 @@ def _state_delta_action(
     ).astype(np.float32)
     action[6] = 1.0 if next_sample.state[6] > cfg.gripper_closed_eps else 0.0
     return action
+
+
+def _state_abs_action(next_sample: StateSample, cfg: RecordConfig) -> np.ndarray:
+    action = next_sample.state.copy().astype(np.float32, copy=False)
+    action[6] = 1.0 if next_sample.state[6] > cfg.gripper_closed_eps else 0.0
+    return action
+
+
+def _state_action(
+    current: StateSample,
+    next_sample: StateSample,
+    action_mode: str,
+    cfg: RecordConfig,
+) -> np.ndarray:
+    if action_mode == "theta":
+        return _state_delta_action(current, next_sample, cfg)
+    if action_mode == "abs":
+        return _state_abs_action(next_sample, cfg)
+    raise ValueError(f"unsupported action mode: {action_mode!r}")
+
+
+def _last_frame_action(
+    sample: StateSample,
+    action_mode: str,
+    cfg: RecordConfig,
+) -> np.ndarray:
+    if action_mode == "theta":
+        return np.zeros((7,), dtype=np.float32)
+    if action_mode == "abs":
+        return _state_abs_action(sample, cfg)
+    raise ValueError(f"unsupported action mode: {action_mode!r}")
 
 
 if __name__ == "__main__":
