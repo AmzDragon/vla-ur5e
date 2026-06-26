@@ -29,9 +29,9 @@
 | 动作输出 | 7 维动作：末端位姿增量 + 夹爪开合 |
 | 训练方案 | OpenPI / PI0.5 LoRA 微调 |
 
-### 演示视频
+### 演示 GIF
 
-两个任务各包含 4 段前视角演示视频。若 GitHub 页面没有直接播放视频，可点击每个 episode 下方的链接打开。
+两个任务各包含 4 段前视角演示 GIF，可直接在 GitHub README 中预览。点击每个 episode 下方的链接可以打开原始 GIF。
 
 <details open>
 <summary><b>Task 1: Move the red cube at the center of the black rectangular paper, then put the yellow cylinder under the cyan cuboid</b></summary>
@@ -39,22 +39,22 @@
 <table>
   <tr>
     <td align="center">
-      <video src="video/Move%20the%20red%20cube%20at%20the%20center%20of%20the%20black%20rectangular%20paper,%20then%20put%20the%20yellow%20cylinder%20under%20the%20cyan%20cuboid/front_camera_episode_00.mp4" controls width="320"></video>
-      <br><a href="video/Move%20the%20red%20cube%20at%20the%20center%20of%20the%20black%20rectangular%20paper,%20then%20put%20the%20yellow%20cylinder%20under%20the%20cyan%20cuboid/front_camera_episode_00.mp4">Episode 00</a>
+      <img src="video/Move%20the%20red%20cube%20at%20the%20center%20of%20the%20black%20rectangular%20paper,%20then%20put%20the%20yellow%20cylinder%20under%20the%20cyan%20cuboid/front_camera_episode_00.gif" width="320" alt="Task 1 Episode 00">
+      <br><a href="video/Move%20the%20red%20cube%20at%20the%20center%20of%20the%20black%20rectangular%20paper,%20then%20put%20the%20yellow%20cylinder%20under%20the%20cyan%20cuboid/front_camera_episode_00.gif">Episode 00</a>
     </td>
     <td align="center">
-      <video src="video/Move%20the%20red%20cube%20at%20the%20center%20of%20the%20black%20rectangular%20paper,%20then%20put%20the%20yellow%20cylinder%20under%20the%20cyan%20cuboid/front_camera_episode_01.mp4" controls width="320"></video>
-      <br><a href="video/Move%20the%20red%20cube%20at%20the%20center%20of%20the%20black%20rectangular%20paper,%20then%20put%20the%20yellow%20cylinder%20under%20the%20cyan%20cuboid/front_camera_episode_01.mp4">Episode 01</a>
+      <img src="video/Move%20the%20red%20cube%20at%20the%20center%20of%20the%20black%20rectangular%20paper,%20then%20put%20the%20yellow%20cylinder%20under%20the%20cyan%20cuboid/front_camera_episode_01.gif" width="320" alt="Task 1 Episode 01">
+      <br><a href="video/Move%20the%20red%20cube%20at%20the%20center%20of%20the%20black%20rectangular%20paper,%20then%20put%20the%20yellow%20cylinder%20under%20the%20cyan%20cuboid/front_camera_episode_01.gif">Episode 01</a>
     </td>
   </tr>
   <tr>
     <td align="center">
-      <video src="video/Move%20the%20red%20cube%20at%20the%20center%20of%20the%20black%20rectangular%20paper,%20then%20put%20the%20yellow%20cylinder%20under%20the%20cyan%20cuboid/front_camera_episode_02.mp4" controls width="320"></video>
-      <br><a href="video/Move%20the%20red%20cube%20at%20the%20center%20of%20the%20black%20rectangular%20paper,%20then%20put%20the%20yellow%20cylinder%20under%20the%20cyan%20cuboid/front_camera_episode_02.mp4">Episode 02</a>
+      <img src="video/Move%20the%20red%20cube%20at%20the%20center%20of%20the%20black%20rectangular%20paper,%20then%20put%20the%20yellow%20cylinder%20under%20the%20cyan%20cuboid/front_camera_episode_02.gif" width="320" alt="Task 1 Episode 02">
+      <br><a href="video/Move%20the%20red%20cube%20at%20the%20center%20of%20the%20black%20rectangular%20paper,%20then%20put%20the%20yellow%20cylinder%20under%20the%20cyan%20cuboid/front_camera_episode_02.gif">Episode 02</a>
     </td>
     <td align="center">
-      <video src="video/Move%20the%20red%20cube%20at%20the%20center%20of%20the%20black%20rectangular%20paper,%20then%20put%20the%20yellow%20cylinder%20under%20the%20cyan%20cuboid/front_camera_episode_03.mp4" controls width="320"></video>
-      <br><a href="video/Move%20the%20red%20cube%20at%20the%20center%20of%20the%20black%20rectangular%20paper,%20then%20put%20the%20yellow%20cylinder%20under%20the%20cyan%20cuboid/front_camera_episode_03.mp4">Episode 03</a>
+      <img src="video/Move%20the%20red%20cube%20at%20the%20center%20of%20the%20black%20rectangular%20paper,%20then%20put%20the%20yellow%20cylinder%20under%20the%20cyan%20cuboid/front_camera_episode_03.gif" width="320" alt="Task 1 Episode 03">
+      <br><a href="video/Move%20the%20red%20cube%20at%20the%20center%20of%20the%20black%20rectangular%20paper,%20then%20put%20the%20yellow%20cylinder%20under%20the%20cyan%20cuboid/front_camera_episode_03.gif">Episode 03</a>
     </td>
   </tr>
 </table>
@@ -67,22 +67,22 @@
 <table>
   <tr>
     <td align="center">
-      <video src="video/Move%20the%20red%20cube%20under%20the%20cyan%20cuboid,%20then%20put%20the%20yellow%20cylinder%20on%20the%20left%20side%20of%20the%20black%20rectangular%20paper/front_camera_episode_00.mp4" controls width="320"></video>
-      <br><a href="video/Move%20the%20red%20cube%20under%20the%20cyan%20cuboid,%20then%20put%20the%20yellow%20cylinder%20on%20the%20left%20side%20of%20the%20black%20rectangular%20paper/front_camera_episode_00.mp4">Episode 00</a>
+      <img src="video/Move%20the%20red%20cube%20under%20the%20cyan%20cuboid,%20then%20put%20the%20yellow%20cylinder%20on%20the%20left%20side%20of%20the%20black%20rectangular%20paper/front_camera_episode_00.gif" width="320" alt="Task 2 Episode 00">
+      <br><a href="video/Move%20the%20red%20cube%20under%20the%20cyan%20cuboid,%20then%20put%20the%20yellow%20cylinder%20on%20the%20left%20side%20of%20the%20black%20rectangular%20paper/front_camera_episode_00.gif">Episode 00</a>
     </td>
     <td align="center">
-      <video src="video/Move%20the%20red%20cube%20under%20the%20cyan%20cuboid,%20then%20put%20the%20yellow%20cylinder%20on%20the%20left%20side%20of%20the%20black%20rectangular%20paper/front_camera_episode_01.mp4" controls width="320"></video>
-      <br><a href="video/Move%20the%20red%20cube%20under%20the%20cyan%20cuboid,%20then%20put%20the%20yellow%20cylinder%20on%20the%20left%20side%20of%20the%20black%20rectangular%20paper/front_camera_episode_01.mp4">Episode 01</a>
+      <img src="video/Move%20the%20red%20cube%20under%20the%20cyan%20cuboid,%20then%20put%20the%20yellow%20cylinder%20on%20the%20left%20side%20of%20the%20black%20rectangular%20paper/front_camera_episode_01.gif" width="320" alt="Task 2 Episode 01">
+      <br><a href="video/Move%20the%20red%20cube%20under%20the%20cyan%20cuboid,%20then%20put%20the%20yellow%20cylinder%20on%20the%20left%20side%20of%20the%20black%20rectangular%20paper/front_camera_episode_01.gif">Episode 01</a>
     </td>
   </tr>
   <tr>
     <td align="center">
-      <video src="video/Move%20the%20red%20cube%20under%20the%20cyan%20cuboid,%20then%20put%20the%20yellow%20cylinder%20on%20the%20left%20side%20of%20the%20black%20rectangular%20paper/front_camera_episode_02.mp4" controls width="320"></video>
-      <br><a href="video/Move%20the%20red%20cube%20under%20the%20cyan%20cuboid,%20then%20put%20the%20yellow%20cylinder%20on%20the%20left%20side%20of%20the%20black%20rectangular%20paper/front_camera_episode_02.mp4">Episode 02</a>
+      <img src="video/Move%20the%20red%20cube%20under%20the%20cyan%20cuboid,%20then%20put%20the%20yellow%20cylinder%20on%20the%20left%20side%20of%20the%20black%20rectangular%20paper/front_camera_episode_02.gif" width="320" alt="Task 2 Episode 02">
+      <br><a href="video/Move%20the%20red%20cube%20under%20the%20cyan%20cuboid,%20then%20put%20the%20yellow%20cylinder%20on%20the%20left%20side%20of%20the%20black%20rectangular%20paper/front_camera_episode_02.gif">Episode 02</a>
     </td>
     <td align="center">
-      <video src="video/Move%20the%20red%20cube%20under%20the%20cyan%20cuboid,%20then%20put%20the%20yellow%20cylinder%20on%20the%20left%20side%20of%20the%20black%20rectangular%20paper/front_camera_episode_03.mp4" controls width="320"></video>
-      <br><a href="video/Move%20the%20red%20cube%20under%20the%20cyan%20cuboid,%20then%20put%20the%20yellow%20cylinder%20on%20the%20left%20side%20of%20the%20black%20rectangular%20paper/front_camera_episode_03.mp4">Episode 03</a>
+      <img src="video/Move%20the%20red%20cube%20under%20the%20cyan%20cuboid,%20then%20put%20the%20yellow%20cylinder%20on%20the%20left%20side%20of%20the%20black%20rectangular%20paper/front_camera_episode_03.gif" width="320" alt="Task 2 Episode 03">
+      <br><a href="video/Move%20the%20red%20cube%20under%20the%20cyan%20cuboid,%20then%20put%20the%20yellow%20cylinder%20on%20the%20left%20side%20of%20the%20black%20rectangular%20paper/front_camera_episode_03.gif">Episode 03</a>
     </td>
   </tr>
 </table>
