@@ -68,6 +68,14 @@
         mode="fixed"
       />
 
+      <camera
+        name="front_side_camera"
+        pos="0 0.5 1.6"
+        fovy="58"
+        xyaxes="-1.000000 0.000000 0.000000 0.000000 -0.910366 0.413803"
+        mode="fixed"
+      />
+
     <geom
       name="floor"
       pos="0 0 0"

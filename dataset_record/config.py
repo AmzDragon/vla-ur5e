@@ -87,7 +87,7 @@ class RecordConfig:
     episode_time_s: float = 60.0
 
     reset_region_size_xy: tuple[float, float] = (0.85, 0.65)
-    reset_min_object_gap_m: float = 0.20
+    reset_min_object_gap_m: float = 0.10
     reset_sampling_max_attempts: int = 10_000
     reset_random_seed: int | None = None
     reset_objects: tuple[ResetObjectConfig, ...] = (
