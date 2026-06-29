@@ -1,0 +1,26 @@
+name: vla-ur5e-client
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - ffmpeg=8.1.2
+  - pip
+  - pip:
+      - av==15.1.0
+      - daqp==0.8.7
+      - datasets==4.8.5
+      - dm-tree==0.1.10
+      - jsonlines==4.0.0
+      - mink==1.1.1
+      - msgpack==1.2.1
+      - mujoco==3.9.0
+      - numpy==2.2.6
+      - opencv-python-headless==4.13.0.92
+      - pandas==2.3.3
+      - pillow==12.2.0
+      - pyarrow==24.0.0
+      - torch==2.11.0
+      - torchcodec==0.11.1
+      - torchvision==0.26.0
+      - websockets==16.0
+      - -e ./thirdparty/lerobot[dataset]
